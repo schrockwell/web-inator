@@ -1,0 +1,9 @@
+.git
+.gitignore
+.DS_Store
+.claude
+.kamal
+config
+Dockerfile
+.dockerignore
+Caddyfile

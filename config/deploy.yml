@@ -1,0 +1,23 @@
+service: webinator
+
+image: schrockwell/webinator
+
+retain_containers: 1
+
+servers:
+  web:
+    - kamal.schrockwell.com
+
+proxy:
+  ssl: true
+  hosts:
+    - webinator.schrockwell.com
+  app_port: 3000
+  healthcheck:
+    path: /
+
+registry:
+  server: localhost:5555
+
+builder:
+  arch: amd64
