@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ROM-inator Startup Sound Editor</title>
+  <link rel="stylesheet" href="../main.css">
+
+  <script src="sound.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <header class="nav">
+      <div class="masthead">
+        <a class="brand" href="../">The Webinator</a>
+        <p class="sub">
+          For the
+          <a href="https://www.bigmessowires.com/mac-rom-inator/">Mac ROM-inator V1</a> ~
+          by <a href="https://schrockwell.com" rel="noopener">@schrockwell</a>
+        </p>
+      </div>
+      <nav class="nav-links">
+        <a href="../icon/">Boot Icon</a>
+        <a href="../sound/" class="active">Startup Sound</a>
+      </nav>
+    </header>
+
+    <h1>Startup Sound Editor</h1>
+
+    <div class="card">
+
+      <canvas id="wave" width="760" height="140"></canvas>
+
+      <div class="controls">
+        <label class="filebtn">Load audio…<input type="file" id="file" accept="audio/*"></label>
+        <button id="play" disabled>▶&nbsp;Play preview</button>
+        <button id="download" class="primary" disabled>Download .bin</button>
+      </div>
+
+      <div class="sound-controls">
+        <span>Trim Start</span>
+        <input type="range" id="start" min="0" max="0" step="0.001" value="0" disabled>
+        <span id="startval">0.000s</span>
+      </div>
+
+      <p class="legend">
+        Exports raw <strong>22050&nbsp;Hz, 8-bit unsigned, mono</strong>, padded to
+        <strong>0.66&nbsp;s</strong> (14553&nbsp;bytes).
+      </p>
+
+      <div class="status" id="status">Load an audio file to begin.</div>
+    </div>
+
+    <div class="card">
+      <h2>Some Inspiration</h2>
+      <div class="sample-gallery" id="samples">
+        <button class="sample" type="button" data-file="samples/uh-oh.wav">
+          <span class="sample-icon">🌼</span>
+          <span class="sample-name">Uh-oh</span>
+        </button>
+        <button class="sample" type="button" data-file="samples/meow.mp3">
+          <span class="sample-icon">🐱</span>
+          <span class="sample-name">Meow</span>
+        </button>
+        <button class="sample" type="button" data-file="samples/beep.mp3">
+          <span class="sample-icon">🔔</span>
+          <span class="sample-name">Boop</span>
+        </button>
+        <button class="sample" type="button" data-file="samples/wilhelm.wav">
+          <span class="sample-icon">🗣️</span>
+          <span class="sample-name">Wilhelm</span>
+        </button>
+        </button>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ROM-inator Icon Editor</title>
+  <link rel="stylesheet" href="../main.css">
+
+  <script src="rom-data.js"></script>
+  <script src="samples.js"></script>
+  <script src="icon.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <header class="nav">
+      <div class="masthead">
+        <a class="brand" href="../">The Webinator</a>
+        <p class="sub">
+          For the
+          <a href="https://www.bigmessowires.com/mac-rom-inator/">Mac ROM-inator V1</a> ~
+          by <a href="https://schrockwell.com" rel="noopener">@schrockwell</a>
+        </p>
+      </div>
+      <nav class="nav-links">
+        <a href="../icon/" class="active">Boot Icon</a>
+        <a href="../sound/">Startup Sound</a>
+      </nav>
+    </header>
+
+    <h1>Boot Icon Editor</h1>
+
+    <div class="panels">
+      <div class="card editor-card">
+        <div id="grid"></div>
+        <div class="controls">
+          <label class="filebtn">Load .bin…<input type="file" id="file" accept=".bin,application/octet-stream"></label>
+          <button id="clear">Clear</button>
+          <button id="reset">Reset to original</button>
+          <button id="download" class="primary">Download .bin</button>
+        </div>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="card preview-card">
+        <canvas id="preview" width="33" height="40"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Some Inspiration</h2>
+      <div class="sample-gallery" id="faces"></div>
+    </div>
+  </div>
+</body>
+
+</html>

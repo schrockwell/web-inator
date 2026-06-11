@@ -1,0 +1,20 @@
+# Local dev server for the Webinator static site.
+#
+#   caddy run          # start the server (run from this directory)
+#   open http://localhost:8080
+#
+# Plain HTTP on localhost — no TLS certs to fiddle with for local dev.
+
+http://localhost:8080 {
+	root * .
+	file_server
+	encode gzip
+
+	# Don't cache during development so edits show up on reload.
+	header Cache-Control "no-store"
+
+	log {
+		output stdout
+		format console
+	}
+}
