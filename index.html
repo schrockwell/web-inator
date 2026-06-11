@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ROM-inator I Icon Editor</title>
+  <style>
+    :root {
+      --bg: #1e1e22;
+      --panel: #2a2a30;
+      --ink: #e6e6ea;
+      --muted: #9a9aa5;
+      --accent: #4f9cff;
+      --grid-line: #3a3a42;
+      --black: #111;
+      --white: #f4f4f4;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px;
+      min-height: 100vh;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 840px;
+    }
+
+    h1 {
+      font-size: 20px;
+      margin: 0 0 4px;
+    }
+
+    .sub {
+      color: var(--muted);
+      margin: 0 0 24px;
+      font-size: 13px;
+    }
+
+    .sub a {
+      color: var(--accent);
+    }
+
+    .panels {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .editor-card {
+      flex: 1 1 420px;
+    }
+
+    .preview-card {
+      flex: 0 0 auto;
+    }
+
+    .card {
+      background: var(--panel);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    /* 16x10 pixel grid */
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      grid-template-rows: repeat(10, 1fr);
+      gap: 1px;
+      background: var(--grid-line);
+      border: 1px solid var(--grid-line);
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      user-select: none;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    .cell {
+      width: 100%;
+      height: 100%;
+    }
+
+    .cell.white {
+      background: var(--white);
+    }
+
+    .cell.black {
+      background: var(--black);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    button,
+    .filebtn {
+      appearance: none;
+      border: 1px solid #44444e;
+      background: #34343c;
+      color: var(--ink);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover,
+    .filebtn:hover {
+      background: #3e3e48;
+    }
+
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #06203f;
+      font-weight: 600;
+    }
+
+    button.primary:hover {
+      filter: brightness(1.08);
+    }
+
+    #file {
+      display: none;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 12px;
+      min-height: 1.2em;
+    }
+
+    .status.warn {
+      color: #ffb454;
+    }
+
+    details {
+      margin-top: 4px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    #hex {
+      margin: 10px 0 0;
+      font: 12px/1.6 "SF Mono", Menlo, Consolas, monospace;
+      color: var(--ink);
+      background: #1a1a1e;
+      padding: 10px 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .preview-card h2 {
+      font-size: 16px;
+      margin: 0 0 2px;
+    }
+
+    #preview {
+      width: 264px;
+      /* (25 + 4*2) * 8 */
+      height: 320px;
+      /* (32 + 4*2) * 8 */
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #fff;
+      border-radius: 6px;
+      display: block;
+    }
+
+    .legend {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 14px;
+    }
+
+    .swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      vertical-align: middle;
+      margin: 0 4px 0 10px;
+      border: 1px solid var(--grid-line);
+    }
+
+    .swatch.w {
+      background: var(--white);
+    }
+
+    .swatch.b {
+      background: var(--black);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <h1 style="margin-bottom: 20px;">ROM-inator I Boot Icon Editor</h1>
+
+    <div class="panels">
+      <div class="card editor-card">
+        <div id="grid"></div>
+        <div class="controls">
+          <label class="filebtn">Load .bin…<input type="file" id="file" accept=".bin,application/octet-stream"></label>
+          <button id="reset">Reset to original</button>
+          <button id="download" class="primary">Download .bin</button>
+        </div>
+        <div class="status" id="status"></div>
+        <details>
+          <summary>Show icon bytes (20 bytes @ 0xFD2)</summary>
+          <pre id="hex"></pre>
+        </details>
+      </div>
+
+      <div class="card preview-card">
+        <canvas id="preview" width="33" height="40"></canvas>
+      </div>
+    </div>
+
+    <p class="sub">
+      <a href="https://www.bigmessowires.com/mac-rom-inator/" target="_blank" rel="noopener">ROM-inator Docs ↗</a>
+    </p>
+  </div>
+
+  <script src="rom-data.js"></script>
+  <script>
+    "use strict";
+
+    const ICON_OFFSET = 0xFD2;   // 4050
+    const ICON_BYTES = 20;
+    const WIDTH = 16, HEIGHT = 10;
+    const EXPECTED_SIZE = 135168; // 132 KB base ROM
+    const OVERLAY_X = 5, OVERLAY_Y = 6; // icon position within the Happy Mac base
+    const PAD = 4; // white padding (in base pixels) around the preview
+
+    let romBytes = null;                 // Uint8Array: full working ROM
+    let originalIcon = new Uint8Array(ICON_BYTES); // snapshot for "Reset to original"
+    const pixels = Array.from({ length: HEIGHT }, () => new Array(WIDTH).fill(0));
+
+    // --- drawing-drag state ---
+    let isPainting = false;
+    let paintValue = 1;
+
+    // --- DOM ---
+    const gridEl = document.getElementById("grid");
+    const statusEl = document.getElementById("status");
+    const hexEl = document.getElementById("hex");
+    const cells = []; // cells[r][c] -> div
+
+    // preview canvas + Happy Mac base image
+    const previewEl = document.getElementById("preview");
+    const pctx = previewEl.getContext("2d");
+    const baseImg = new Image();
+    let baseReady = false;
+    baseImg.onload = () => { baseReady = true; renderPreview(); };
+    baseImg.src = "happy-mac.png";
+
+    function renderPreview() {
+      if (!baseReady) return;
+      pctx.imageSmoothingEnabled = false;
+      pctx.fillStyle = "#fff"; // white padding around the base
+      pctx.fillRect(0, 0, previewEl.width, previewEl.height);
+      pctx.drawImage(baseImg, PAD, PAD);
+      for (let r = 0; r < HEIGHT; r++) {
+        for (let c = 0; c < WIDTH; c++) {
+          pctx.fillStyle = pixels[r][c] ? "#000" : "#fff"; // bit 1 = black, 0 = white
+          pctx.fillRect(PAD + OVERLAY_X + c, PAD + OVERLAY_Y + r, 1, 1);
+        }
+      }
+    }
+
+    function b64ToBytes(b64) {
+      const bin = atob(b64);
+      const out = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+      return out;
+    }
+
+    function readIconToPixels() {
+      for (let r = 0; r < HEIGHT; r++) {
+        for (let c = 0; c < WIDTH; c++) {
+          const byte = romBytes[ICON_OFFSET + r * 2 + (c < 8 ? 0 : 1)];
+          const bit = 7 - (c % 8);
+          pixels[r][c] = (byte >> bit) & 1;
+        }
+      }
+    }
+
+    function writePixelsToRom() {
+      for (let r = 0; r < HEIGHT; r++) {
+        let hi = 0, lo = 0;
+        for (let c = 0; c < WIDTH; c++) {
+          const bit = 7 - (c % 8);
+          if (pixels[r][c]) {
+            if (c < 8) hi |= (1 << bit); else lo |= (1 << bit);
+          }
+        }
+        romBytes[ICON_OFFSET + r * 2] = hi;
+        romBytes[ICON_OFFSET + r * 2 + 1] = lo;
+      }
+    }
+
+    function buildGrid() {
+      gridEl.innerHTML = "";
+      for (let r = 0; r < HEIGHT; r++) {
+        cells[r] = [];
+        for (let c = 0; c < WIDTH; c++) {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.dataset.r = r;
+          cell.dataset.c = c;
+          gridEl.appendChild(cell);
+          cells[r][c] = cell;
+        }
+      }
+    }
+
+    function paintCell(r, c, val) {
+      if (pixels[r][c] === val) return;
+      pixels[r][c] = val;
+      renderCell(r, c);
+      renderHex();
+      renderPreview();
+    }
+
+    function renderCell(r, c) {
+      // bit 1 = black, bit 0 = white
+      cells[r][c].className = "cell " + (pixels[r][c] ? "black" : "white");
+    }
+
+    function render() {
+      for (let r = 0; r < HEIGHT; r++)
+        for (let c = 0; c < WIDTH; c++) renderCell(r, c);
+      renderHex();
+      renderPreview();
+    }
+
+    function renderHex() {
+      // derive the 20 bytes straight from pixels so the hex always matches the grid
+      const bytes = [];
+      for (let r = 0; r < HEIGHT; r++) {
+        let hi = 0, lo = 0;
+        for (let c = 0; c < WIDTH; c++) {
+          const bit = 7 - (c % 8);
+          if (pixels[r][c]) { if (c < 8) hi |= (1 << bit); else lo |= (1 << bit); }
+        }
+        bytes.push(hi, lo);
+      }
+      hexEl.textContent = bytes.map(b => b.toString(16).padStart(2, "0")).join(" ");
+    }
+
+    function loadRom(bytes, label) {
+      romBytes = new Uint8Array(bytes); // own a mutable copy
+      originalIcon = romBytes.slice(ICON_OFFSET, ICON_OFFSET + ICON_BYTES);
+      readIconToPixels();
+      render();
+      if (romBytes.length !== EXPECTED_SIZE) {
+        setStatus(`Loaded ${label} (${romBytes.length} bytes). Expected ${EXPECTED_SIZE}; editing icon anyway.`, true);
+      } else {
+        setStatus(`Loaded ${label} (${romBytes.length} bytes).`, false);
+      }
+    }
+
+    function setStatus(msg, warn) {
+      statusEl.textContent = msg;
+      statusEl.className = "status" + (warn ? " warn" : "");
+    }
+
+    // --- events: drag painting ---
+    function cellFromEvent(e) {
+      const t = e.target;
+      if (!t || !t.classList || !t.classList.contains("cell")) return null;
+      return { r: +t.dataset.r, c: +t.dataset.c };
+    }
+
+    gridEl.addEventListener("mousedown", (e) => {
+      const cell = cellFromEvent(e);
+      if (!cell) return;
+      e.preventDefault();
+      isPainting = true;
+      paintValue = pixels[cell.r][cell.c] ? 0 : 1; // toggle clicked pixel, drag paints that value
+      paintCell(cell.r, cell.c, paintValue);
+    });
+    gridEl.addEventListener("mouseover", (e) => {
+      if (!isPainting) return;
+      const cell = cellFromEvent(e);
+      if (cell) paintCell(cell.r, cell.c, paintValue);
+    });
+    document.addEventListener("mouseup", () => { isPainting = false; });
+
+    // touch support (drag paint on mobile)
+    gridEl.addEventListener("touchstart", (e) => {
+      const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+      if (t && t.classList.contains("cell")) {
+        e.preventDefault();
+        isPainting = true;
+        const r = +t.dataset.r, c = +t.dataset.c;
+        paintValue = pixels[r][c] ? 0 : 1;
+        paintCell(r, c, paintValue);
+      }
+    }, { passive: false });
+    gridEl.addEventListener("touchmove", (e) => {
+      if (!isPainting) return;
+      e.preventDefault();
+      const t = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+      if (t && t.classList.contains("cell")) paintCell(+t.dataset.r, +t.dataset.c, paintValue);
+    }, { passive: false });
+    document.addEventListener("touchend", () => { isPainting = false; });
+
+    // --- controls ---
+    document.getElementById("file").addEventListener("change", async (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const buf = new Uint8Array(await f.arrayBuffer());
+      if (buf.length < ICON_OFFSET + ICON_BYTES) {
+        setStatus(`File too small (${buf.length} bytes); needs at least ${ICON_OFFSET + ICON_BYTES}.`, true);
+        e.target.value = "";
+        return;
+      }
+      loadRom(buf, f.name);
+      e.target.value = ""; // allow re-loading the same file
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+      romBytes.set(originalIcon, ICON_OFFSET);
+      readIconToPixels();
+      render();
+      setStatus("Icon reset to the originally loaded image.", false);
+    });
+
+    document.getElementById("download").addEventListener("click", () => {
+      writePixelsToRom();
+      const blob = new Blob([romBytes], { type: "application/octet-stream" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "code-custom.bin";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus("Downloaded code-custom.bin with your icon applied.", false);
+    });
+
+    // --- init ---
+    buildGrid();
+    loadRom(b64ToBytes(DEFAULT_ROM_B64), "default ROM");
+  </script>
+</body>
+
+</html>
