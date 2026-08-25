@@ -321,6 +321,10 @@ button.primary:hover {
   margin-top: 14px;
 }
 
+.legend a {
+  color: var(--accent);
+}
+
 .swatch {
   display: inline-block;
   width: 10px;
@@ -399,4 +403,86 @@ button.primary:hover {
 
 .sample-name {
   font-size: 14px;
+}
+
+/* ---- Wallpaper ditherer ---- */
+
+#dither {
+  display: block;
+  width: 100%;
+  max-width: 512px;
+  margin: 0 auto;
+  aspect-ratio: 512 / 342;
+  background: #1a1a1e;
+  border-radius: 8px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+#dither.dragging {
+  cursor: grabbing;
+}
+
+.dither-options {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.dither-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dither-options select {
+  appearance: none;
+  border: 1px solid #44444e;
+  background: #34343c;
+  color: var(--ink);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.dither-options select:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.dither-options input[type="checkbox"] {
+  accent-color: var(--accent);
+}
+
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.slider-row > span:first-child {
+  min-width: 76px;
+}
+
+.slider-row input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.slider-row .slider-value {
+  min-width: 48px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }

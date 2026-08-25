@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Classic Mac Wallpaper Ditherer</title>
+  <link rel="stylesheet" href="../assets/main.css">
+
+  <script src="wallpaper.js"></script>
+</head>
+
+<body>
+  <div class="app">
+    <header class="nav">
+      <div class="masthead">
+        <a class="brand" href="../">The Webinator</a>
+        <p class="sub">
+          For the
+          <a href="https://www.bigmessowires.com/mac-rom-inator/">Mac ROM-inator V1</a> ~
+          by <a href="https://schrockwell.com" rel="noopener">@schrockwell</a>
+        </p>
+      </div>
+      <nav class="nav-links">
+        <a href="../icon/">Boot Icon</a>
+        <a href="../sound/">Startup Sound</a>
+        <a href="../wallpaper/" class="active">Wallpaper</a>
+      </nav>
+    </header>
+
+    <h1>Wallpaper Ditherer</h1>
+
+    <div class="card" id="dither-card">
+
+      <canvas id="dither" width="512" height="342"></canvas>
+
+      <div class="controls">
+        <label class="filebtn">Load photo…<input type="file" id="file" accept="image/*"></label>
+        <button id="reset" disabled>Reset adjustments</button>
+        <button id="download-hqx" class="primary" disabled>Download .hqx (BinHex)</button>
+        <button id="download-bin" disabled>.bin (MacBinary)</button>
+        <button id="download-raw" disabled>Raw .pntg</button>
+      </div>
+
+      <div class="dither-options">
+        <label>Dither
+          <select id="algo" disabled>
+            <option value="atkinson" selected>Atkinson</option>
+            <option value="floyd">Floyd–Steinberg</option>
+            <option value="bayer">Ordered (Bayer 8×8)</option>
+            <option value="threshold">Threshold only</option>
+          </select>
+        </label>
+        <label><input type="checkbox" id="invert" disabled> Invert</label>
+      </div>
+
+      <div class="slider-row">
+        <span>Zoom</span>
+        <input type="range" id="zoom" min="1" max="4" step="0.01" value="1" disabled>
+        <span class="slider-value" id="zoomval">100%</span>
+      </div>
+      <div class="slider-row">
+        <span>Brightness</span>
+        <input type="range" id="brightness" min="-100" max="100" step="1" value="0" disabled>
+        <span class="slider-value" id="brightnessval">0</span>
+      </div>
+      <div class="slider-row">
+        <span>Contrast</span>
+        <input type="range" id="contrast" min="-100" max="100" step="1" value="0" disabled>
+        <span class="slider-value" id="contrastval">0</span>
+      </div>
+      <div class="slider-row">
+        <span>Threshold</span>
+        <input type="range" id="threshold" min="0" max="255" step="1" value="128" disabled>
+        <span class="slider-value" id="thresholdval">128</span>
+      </div>
+
+      <p class="legend">
+        Exports a <strong>512&nbsp;×&nbsp;342</strong> MacPaint (PNTG)</strong> image.
+        Use <a href="https://macintoshgarden.org/apps/backdrop" rel="noopener">Backdrop</a> to
+        set the image as your desktop wallpaper.
+      </p>
+    </div>
+  </div>
+</body>
+
+</html>
