@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Serve the site locally at http://localhost:8080 using the Caddyfile.
+# Falls back to python3's http.server if caddy isn't installed.
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+if command -v caddy >/dev/null 2>&1; then
+  echo "Serving at http://localhost:8080 (caddy) — ctrl-C to stop"
+  exec caddy run
+else
+  echo "caddy not found; falling back to python3 http.server"
+  echo "Serving at http://localhost:8080 — ctrl-C to stop"
+  exec python3 -m http.server 8080
+fi
